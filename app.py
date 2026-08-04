@@ -1,10 +1,11 @@
 import gradio as gr
 import cv2
 import numpy as np
+import spaces
 
 from orbSift import extractFeatures, matchFeatures, computeHomography, warpAndStitch
 
-
+@spaces.GPU
 def process2Images(img1, img2, method):
     if img1 is None or img2 is None:
         raise gr.Error("Please upload both Image 1 and Image 2.")
@@ -27,7 +28,7 @@ def process2Images(img1, img2, method):
         raise gr.Error(f"Custom Stitching Error: {str(e)}")
 
 
-
+@spaces.GPU
 def processManyImages(fileList):
     if not fileList or len(fileList) < 2:
         raise gr.Error("Please upload at least 2 images.")
