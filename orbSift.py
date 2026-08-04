@@ -103,13 +103,31 @@ def computeHomography(kp1: list, kp2: list, good_matches: list):
     return H, mask
 
 def warpAndStitch(img1: np.ndarray, img2: np.ndarray, H: np.ndarray) -> np.ndarray:
+    # Get the dimensions of both images
+    h1, w1 = img1.shape[:2]
+    h2, w2 = img2.shape[:2]
 
-    canvasWidth = img1.shape[1] + img2.shape[1]
-    canvasHeight = max(img1.shape[0], img2.shape[0])
+    # Get the corner points of img1
+    corners1 = np.float32([[0, 0], [0, h1], [w1, h1], [w1, 0]]).reshape(-1, 1, 2)
 
-    # Warp the image using the computed homography matrix on the canvas
-    panorama = cv.warpPerspective(img1, H, (canvasWidth, canvasHeight))
+    # Transform the corners of img1 to img2's coordinate system
+    corners2 = cv.perspectiveTransform(corners1, H)
 
-    panorama[0:img2.shape[0], 0:img2.shape[1]] = img2
+    # Combine the corners to get the overall panorama dimensions
+    all_corners = np.concatenate((corners1, corners2), axis=0)
+    [x_min, y_min] = np.int32(all_corners.min(axis=0).ravel() - 0.5)
+    [x_max, y_max] = np.int32(all_corners.max(axis=0).ravel() + 0.5)
+
+    # Calculate the translation to shift the panorama to positive coordinates
+    translation_dist = [-x_min, -y_min]
+
+    # Create the translation matrix
+    H_translation = np.array([[1, 0, translation_dist[0]], [0, 1, translation_dist[1]], [0, 0, 1]])
+
+    # Warp img1 with the combined homography and translation
+    panorama = cv.warpPerspective(img1, H_translation.dot(H), (x_max - x_min, y_max - y_min))
+
+    # Place img2 in the panorama
+    panorama[translation_dist[1]:h2+translation_dist[1], translation_dist[0]:w2+translation_dist[0]] = img2
 
     return panorama
