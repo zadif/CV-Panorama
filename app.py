@@ -61,7 +61,24 @@ with gr.Blocks(title="Computer Vision Panorama App") as demo:
     gr.Markdown("Select a mode below to stitch your photos.")
 
     with gr.Tabs():
-        
+        # =========================================================
+        # BOX 2: MERGE MANY IMAGES (OpenCV Production Engine)
+        # =========================================================
+        with gr.TabItem("Merge Many Images"):
+            gr.Markdown("### Open CV Stitcher")
+            
+            # Upload Multiple Files
+            input_files = gr.File(file_count="multiple", file_types=["image"], label="Upload 2 or More Photos")
+            
+            btn_many = gr.Button("Stitch Multiple Images", variant="primary")
+            output_many = gr.Image(label="Multi-Image Panorama Result")
+            
+            # Button Click Event
+            btn_many.click(
+                fn=processManyImages,
+                inputs=input_files,
+                outputs=output_many
+            )
         # =========================================================
         # BOX 1: MERGE 2 IMAGES (Custom SIFT / ORB)
         # =========================================================
@@ -86,24 +103,7 @@ with gr.Blocks(title="Computer Vision Panorama App") as demo:
                 outputs=output_2img
             )
 
-        # =========================================================
-        # BOX 2: MERGE MANY IMAGES (OpenCV Production Engine)
-        # =========================================================
-        with gr.TabItem("Merge Many Images"):
-            gr.Markdown("### Open CV Stitcher")
-            
-            # Upload Multiple Files
-            input_files = gr.File(file_count="multiple", file_types=["image"], label="Upload 2 or More Photos")
-            
-            btn_many = gr.Button("Stitch Multiple Images", variant="primary")
-            output_many = gr.Image(label="Multi-Image Panorama Result")
-            
-            # Button Click Event
-            btn_many.click(
-                fn=processManyImages,
-                inputs=input_files,
-                outputs=output_many
-            )
+        
 
 # Launch the app
 if __name__ == "__main__":
