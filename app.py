@@ -57,7 +57,7 @@ def processManyImages(fileList):
 
 
 with gr.Blocks(title="Computer Vision Panorama App") as demo:
-    gr.Markdown("# Computer Vision Panorama Stitcher")
+    gr.Markdown("# Computer Vision Panorama-----Stitcher")
     gr.Markdown("Select a mode below to stitch your photos.")
 
     with gr.Tabs():
